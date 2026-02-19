@@ -203,6 +203,9 @@ Vue.component('product', {
                    @mouseover="updateProduct(index)"
            ></div>
           
+           <ul>
+                <li v-for="size in sizes">{{ size }}</li>
+           </ul>
 
            <button
                    v-on:click="addToCart"
@@ -213,9 +216,6 @@ Vue.component('product', {
            </button>
            <button v-on:click="removeFromCart" :disabled="!inStock" :class="{disabledButton: !inStock}">Remove cart</button>
           
-           <ul>
-                <li v-for="size in sizes">{{ size }}</li>
-           </ul>
 
        
        </div>
@@ -228,6 +228,7 @@ Vue.component('product', {
             :brand="brand"
             :variants="variants">
        </product-tabs>
+   </div>
    </div>
  `,
     data() {
@@ -255,7 +256,7 @@ Vue.component('product', {
                 }
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-            reviews:[]
+            reviews: []
         }
     },
     methods: {
@@ -297,7 +298,7 @@ Vue.component('product', {
             }
         }
     },
-    mounted(){
+    mounted() {
         eventBus.$on('review-submitted', productReview => {
             this.reviews.push(productReview);
         });
