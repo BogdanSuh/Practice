@@ -213,9 +213,13 @@ Vue.component('product', {
                    :class="{ disabledButton: !inStock }"
            >
                Add to cart
-           </button>
-           <button v-on:click="removeFromCart" :disabled="!inStock" :class="{disabledButton: !inStock}">Remove cart</button>
-          
+          <button
+  v-on:click="addToCart"
+  :disabled="!inStock"
+  :class="{ disabledButton: !inStock }"
+>
+  Add to cart
+</button>
 
        
        </div>
@@ -252,7 +256,7 @@ Vue.component('product', {
                     variantId: 2235,
                     variantColor: 'blue',
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 0
+                    variantQuantity: 0 //
                 }
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
@@ -261,17 +265,18 @@ Vue.component('product', {
     },
     methods: {
         addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+            const quantity = this.currentVariantQuantity;
+            if (quantity > 0) {
+                this.variants[this.selectedVariant].variantQuantity--;
+                this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+            }
         },
         removeFromCart() {
+            this.variants[this.selectedVariant].variantQuantity++;
             this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId);
         },
         updateProduct(index) {
             this.selectedVariant = index;
-            console.log(index);
-        },
-        addReview(productReview) {
-            this.reviews.push(productReview)
         }
     },
     computed: {
@@ -282,7 +287,10 @@ Vue.component('product', {
             return this.variants[this.selectedVariant].variantImage;
         },
         inStock() {
-            return this.variants[this.selectedVariant].variantQuantity
+            return this.variants[this.selectedVariant].variantQuantity > 0;
+        },
+        currentVariantQuantity() {
+            return this.variants[this.selectedVariant].variantQuantity;
         },
         sale() {
             if (this.onSale) {
@@ -291,11 +299,7 @@ Vue.component('product', {
             return this.brand + ' ' + this.product + ' Без распродажи';
         },
         shipping() {
-            if (this.premium) {
-                return "free";
-            } else {
-                return 2.99
-            }
+            return this.premium ? "free" : 2.99;
         }
     },
     mounted() {
